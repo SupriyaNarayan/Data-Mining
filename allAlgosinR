@@ -1,0 +1,71 @@
+#Use respective packages!
+
+#Chose R and R Studio to perform the project, the main reason being the massive available packages and the ease of plotting the data. 
+#Used the ggplot2 package to plot graphs and projections as one can create elaborate custom plots.
+
+#kmeans
+
+>result<-kmeans(data,3)
+>plot(data[c,(“Rings”,”shellWt”)],col=result$cluster)
+
+#dbscan
+
+#package fpc
+>result.db<-dbscan(data,0.4,120)
+>pairs(data,col=result.db$cluster +1L)
+>result.pc<- fps::dbscan(data,0.4,120)
+>pairs(data,col=result.fpc$cluster +1L)
+
+
+#hirearchical
+#package mclust
+>d_clust<- dist(as.matrix(data))
+>plot(hclust(d_clust))
+
+
+#regression
+>x<- data$male
+>xcode<-ifelse(x==“F”,1,0)
+>y<- data$rings
+>plot<-(y,jitter(xcode,0.15),pch=19)
+#can change pch values!
+
+#svm
+#package e1071
+>dat=data.frame(x=data$rings,y=data$male)
+>svmfit=svm(y~.,data=dat,kernel=“polynomial”,cost=10)
+>plot(svmfit,dat)
+
+#decisionTree
+#package ISLR,tree
+>attach(data)
+>head(data)
+>range(Rings)
+>High=ifelse(Rings>=14,”Yes","No")
+>length(High)
+>names(data)
+>data$Rings<- NULL
+>set.seed(2)
+> train = sample(1:nrow(data),nrow(data)/2)
+> test = -train
+> training_data = data[train,]
+> testing_data = data[test, ]
+> testing_High=High[test]
+> tree_model=tree(High~.,training_data)
+> plot(tree_model)
+> text(tree_model,pretty = 0)
+> tree_pred=predict(tree_model,testing_data,type="class")
+> mean(tree_pred != testing_High)
+
+>set.seed(3)
+> cv_tree = cv.tree
+> cv_tree = cv.tree(tree_model,FUN = prune.misclass)
+> names(cv_tree)
+> plot(cv_tree$size,cv_tree$dev,type="b")
+> pruned_model = prune.misclass(tree_model,best=6)
+> plot(pruned_model)
+> text(pruned_model,pretty = 0)
+> tree_pred=predict(pruned_model,testing_data,type = "class")
+> mean(tree_pred!=testing_High)
+
+
